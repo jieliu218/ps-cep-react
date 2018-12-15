@@ -15,7 +15,23 @@
     "release:dev": "npm run build:dev && npm run deploy:dev",
     "release:prod": "npm run build:prod && npm run deploy:prod && npm run archive",
     "b": "babel ./client/js --out-dir ./client/out",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "npm-watch"
+  },
+  "watch": {
+    "build:dev":{
+      "patterns": ["src"],
+      "extensions": "js,jsx",
+      "quiet": true,
+      "legacyWatch": true,
+      "runOnChangeOnly": false
+    },
+    "deploy:dev":{
+      "patterns": ["dist"],
+      "quiet": true,
+      "legacyWatch": true,
+      "runOnChangeOnly": false
+    }
   },
   "author": "Tomer Shalev (HendrixString)",
   "license": "ISC",
@@ -41,7 +57,9 @@
   "dependencies": {
     "@material-ui/core": "^1.4.2",
     "@material-ui/icons": "^2.0.0",
+    "npm-watch": "^0.5.0",
     "react": "^16.4.1",
-    "react-dom": "^16.4.1"
+    "react-dom": "^16.4.1",
+    "webpack-dev-server": "^3.1.10"
   }
 }

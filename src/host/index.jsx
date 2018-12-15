@@ -21,6 +21,10 @@ $._ext = {
     }
 }
 
+function todo() {
+    app.documents.add();// 新建一个文档
+  }
+
 // // fileName is a String (with the .jsx extension included)
 // function loadJSX(fileName) {
 //     var csInterface = new CSInterface();

@@ -67,6 +67,9 @@ function build() {
         utils.copyRecursiveSync(fromRoot('assets'), pluginFolder, ['templates'])
         // render manifest.xml
         utils.log_progress('rendering manifest.xml ...')
+        if(!fs.existsSync(path.join(pluginFolder, 'CSXS'))) {
+            fs.mkdirSync(path.join(pluginFolder, 'CSXS'))
+        }
         var manifest_template = require(path.join(templatesFolder, 'manifest.template.xml.js'))
         var rendered_xml = manifest_template(pluginConfig)
         var xml_out_file = path.join(pluginFolder, 'CSXS', 'manifest.xml')

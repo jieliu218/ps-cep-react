@@ -7,6 +7,87 @@ import withStyles from '@material-ui/core/styles/withStyles'
 import PluginItem from './PluginItem.jsx'
 import BrowseItem from './BrowseItem.jsx'
 
+import CSinterface from '../../libs/CSInterface';
+// Get a reference to a CSInterface object
+const csInterface = new CSInterface();
+
+const eventSet = 1936028772; // "setd" 
+// Get extension ID
+const gExtensionID = csInterface.getExtensionID();
+var gRegisteredEvents = [eventSet];
+function PhotoshopCallbackUnique(csEvent) {
+    try {
+        if (typeof csEvent.data === "string") {
+            var eventData = csEvent.data.replace("ver1,{", "{");
+            var eventDataParse = JSON.parse(eventData);
+            var jsonStringBack = JSON.stringify(eventDataParse);
+            cosole.log("PhotoshopCallbackUnique: " + jsonStringBack);
+
+            var uiItemToUpdate = null;
+            if (eventDataParse.eventID === eventMake)
+                uiItemToUpdate = lblMake;
+            else if (eventDataParse.eventID === eventDelete)
+                uiItemToUpdate = lblDelete;
+            else if (eventDataParse.eventID === eventClose)
+                uiItemToUpdate = lblClose;
+            else if (eventDataParse.eventID === eventSelect)
+                uiItemToUpdate = lblSelect;
+            else if (eventDataParse.eventID === eventSet)
+                uiItemToUpdate = lblSet;
+
+            if (uiItemToUpdate !== null) {
+                var count = Number(uiItemToUpdate.innerHTML) + 1;
+                uiItemToUpdate.innerHTML = " " + count;
+            }
+            console.log(csEvent);
+            
+            // if you just made a text layer, let me check my object for something
+            // interesting to dump to log
+            if (eventDataParse &&
+                eventDataParse.eventData.null &&
+                eventDataParse.eventData.null._ref &&
+                eventDataParse.eventData.null._ref === "textLayer") {
+                cosole.log("Got a text layer, trying to find paragraphStyleRange");
+                if (eventDataParse.eventData.using &&
+                    eventDataParse.eventData.using.paragraphStyleRange) {
+                    cosole.log("paragraphStyleRange:" + eventDataParse.eventData.using.paragraphStyleRange);
+                    cosole.log("paragraphStyleRange typeof :" + typeof eventDataParse.eventData.using.paragraphStyleRange);
+                    cosole.log("paragraphStyleRange[0].from: " + eventDataParse.eventData.using.paragraphStyleRange[0].from);
+                }
+            }
+        } else {
+            cosole.log("PhotoshopCallbackUnique expecting string for csEvent.data!");
+        }
+    } catch (e) {
+        cosole.log("PhotoshopCallbackUnique catch:" + e);
+    }
+}
+    // Tell Photoshop to not unload us when closed
+    function Persistent(inOn) {
+        var event;
+        if (inOn) {
+            event = new CSEvent("com.adobe.PhotoshopPersistent", "APPLICATION");
+        } else {
+            event = new CSEvent("com.adobe.PhotoshopUnPersistent", "APPLICATION");
+        }
+        event.extensionId = gExtensionID;
+        csInterface.dispatchEvent(event);
+    }
+
+    // Tell Photoshop the events we want to listen for
+    function Register(inOn, inEvents) {
+        var event;
+        if (inOn) {
+            event = new CSEvent("com.adobe.PhotoshopRegisterEvent", "APPLICATION");
+        } else {
+            event = new CSEvent("com.adobe.PhotoshopUnRegisterEvent", "APPLICATION");
+        }
+        console.log(inEvents);
+        
+        event.extensionId = gExtensionID;
+        event.data = inEvents;
+        csInterface.dispatchEvent(event);
+    }
 const styles = theme => ({
     root: {
         paddingTop:theme.spacing.unit * 1
@@ -37,6 +118,12 @@ class Home extends React.Component {
         this.browseItemRef = React.createRef()
     }
 
+    componentWillMount() {
+        Persistent(true);
+        console.log('ddd');
+        
+        Register(true, gRegisteredEvents.toString());
+    }
     /**
      * export button was clicked
      *
@@ -57,11 +144,16 @@ class Home extends React.Component {
             isInfoChecked,
             isFlattenChecked
         })
+        if(isTexturesChecked) {
+            location.reload();
+        }
     }
 
     render() {
         const { classes } = this.props;
-
+        const cs = new CSInterface();
+        // console.log(cs.getCurren  / /tApiVersion())
+        // cs.evalScript('todo()')
         return (
             <div className={classes.root}>
                 <Paper elevation={5} className={classes.paper}>
@@ -78,7 +170,7 @@ class Home extends React.Component {
                     </List>
                     <Button onClick={this.export_onClick}
                             className={classes.export} size="small">
-                        Export
+                        Exfddfff
                     </Button>
                 </Paper>
 
